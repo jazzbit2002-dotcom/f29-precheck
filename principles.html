@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F29 투자 원칙</title>
+<meta name="description" content="F29의 원칙은 더 많이 벌기 위한 말이 아닙니다. 틀렸을 때 살아남기 위한 규율입니다.">
+<meta name="theme-color" content="#0A0E17">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap">
+<style>
+:root{
+  --bg:#0A0E17; --card:#131A28; --card2:#0F1520;
+  --line:#1F2A3D; --line2:#2C3A54;
+  --txt:#E8EDF7; --txt2:#8B9AB5; --txt3:#5A6B84;
+  --pass:#3DD8B0; --watch:#D8B45F; --stop:#E5484D;
+  --teal:#3DD8B0; --purple:#9D7BEA; --pink:#E85D9C; --gold:#D8B45F;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--txt);
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+  -webkit-font-smoothing:antialiased; padding:30px 18px 50px}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+#app{max-width:560px; margin:0 auto; animation:fade .5s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.brand{display:flex; align-items:baseline; gap:10px}
+.brand .logo{font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:800; letter-spacing:-1px}
+.brand .logo b{color:var(--gold)}
+.brand .name{font-size:17px; font-weight:700}
+.nav{display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 0}
+.nav a{font-size:11.5px; padding:5px 10px; border-radius:20px; text-decoration:none;
+  color:var(--txt2); background:var(--card); border:1px solid var(--line)}
+.nav a.on{color:var(--bg); background:var(--gold); border-color:var(--gold); font-weight:700}
+.nav a:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+
+.hero{margin:18px 0 4px; padding:18px 18px; border-radius:12px;
+  background:linear-gradient(180deg,#D8B45F12,#E5484D08); border:1px solid #D8B45F44}
+.hero .k{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--gold); font-weight:700; margin-bottom:8px}
+.hero .t{font-size:16px; font-weight:800; line-height:1.5; letter-spacing:-.3px}
+.hero .t b{color:var(--gold)}
+
+.principles{margin-top:16px; display:flex; flex-direction:column; gap:11px}
+.group{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:2px;
+  color:var(--gold); margin:12px 0 -2px; padding-left:2px}
+.group:first-child{margin-top:0}
+.p{background:var(--card); border:1px solid var(--line); border-radius:12px;
+  padding:16px 17px; display:flex; gap:13px; align-items:flex-start}
+.p .num{font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:800; color:var(--gold);
+  line-height:1.2; min-width:26px}
+.p .body{flex:1}
+.p .stmt{font-size:14.5px; font-weight:700; line-height:1.5; letter-spacing:-.2px}
+.p .desc{font-size:12.5px; color:var(--txt2); line-height:1.55; margin-top:6px}
+.p .tag{display:inline-block; margin-top:9px; font-family:'JetBrains Mono',monospace;
+  font-size:9.5px; letter-spacing:.5px; color:var(--txt3);
+  border:1px solid var(--line); border-radius:5px; padding:3px 7px}
+/* 앵커(핵심 4문) 강조 */
+.p.anchor{border-color:#D8B45F55; background:linear-gradient(180deg,#D8B45F0C,var(--card))}
+.p.anchor .stmt{color:var(--gold)}
+
+.close{margin-top:18px; padding:15px 17px; border-radius:12px; text-align:center;
+  background:var(--card); border:1px solid var(--line)}
+.close .t{font-size:13px; font-weight:700; color:var(--txt); line-height:1.55}
+.close .s{font-size:12px; color:var(--txt2); margin-top:6px; line-height:1.5}
+.disclaimer{font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--txt3);
+  text-align:center; margin-top:18px; line-height:1.7; letter-spacing:.3px}
+.fineprint{text-align:center; margin:16px 0 0; font-size:12px; color:var(--txt2); line-height:1.7;
+  padding-top:14px; border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){#app{animation:none}}
+.copyright{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt3);
+  text-align:center; margin-top:16px; padding-top:14px; border-top:1px solid var(--line);
+  line-height:1.75; letter-spacing:.2px}
+
+/* ===== 포털 헤더 (스코프: .portal-nav) ===== */
+.portal-nav{position:sticky;top:0;z-index:50;background:rgba(10,14,23,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.portal-nav .nav-in{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:34px}
+.portal-brand{display:flex;align-items:center;gap:9px;text-decoration:none}
+.portal-brand .mark{width:26px;height:26px;flex-shrink:0}
+.portal-brand .wm{font-size:1.28rem;font-weight:800;letter-spacing:.02em;color:var(--txt)}
+.portal-nav .navlinks{display:flex;gap:26px;margin-left:8px}
+.portal-nav .navlinks a{text-decoration:none;color:var(--txt2);font-size:.86rem;font-weight:600;transition:color .16s;white-space:nowrap}
+.portal-nav .navlinks a:hover{color:var(--txt)}
+.portal-nav .navlinks a.active{color:var(--teal)}
+.portal-nav .navlinks a .en{display:block;font-size:.62rem;color:var(--txt3);font-weight:500;letter-spacing:.04em;margin-top:1px}
+.portal-nav .navlinks a.active .en{color:var(--teal);opacity:.7}
+.portal-nav .nav-lang{margin-left:auto;display:flex;gap:3px}
+.portal-nav .nav-lang button{background:transparent;border:1px solid var(--line);color:var(--txt3);border-radius:6px;padding:4px 9px;font-size:.68rem;cursor:pointer;font-family:inherit;transition:all .16s}
+.portal-nav .nav-lang button:hover{border-color:var(--line2);color:var(--txt2)}
+.portal-nav .nav-lang button.on{border-color:var(--teal);color:var(--teal)}
+@media(max-width:820px){.portal-nav .navlinks{display:none}}
+/* ===== 포털 푸터 ===== */
+footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 46px}
+.foot-in{max-width:1080px;margin:0 auto;padding:0 24px}
+.foot-brand{font-size:.9rem;font-weight:700;color:var(--txt2)}
+.foot-contact{margin-top:12px;font-size:.78rem;color:var(--txt2)}
+.foot-contact .em{color:var(--teal);font-weight:600;unicode-bidi:bidi-override}
+.foot-dis{margin-top:12px;font-size:.72rem;color:var(--txt3);line-height:1.65;max-width:620px}
+.foot-copy{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:.7rem;color:var(--txt3);line-height:1.6}
+</style>
+</head>
+<body>
+  <nav class="portal-nav">
+    <div class="nav-in">
+      <a class="portal-brand" href="/">
+        <svg class="mark" viewBox="0 0 32 32" fill="none">
+          <rect x="3" y="3" width="26" height="26" rx="7" stroke="#3DD8B0" stroke-width="2"/>
+          <path d="M11 21V11h9" stroke="#3DD8B0" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M11 16h6" stroke="#3DD8B0" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+        <span class="wm">F29</span>
+      </a>
+      <div class="navlinks">
+        <a href="/moneyflow"><span id="nv1"></span><span class="en">Money Flow</span></a>
+        <a href="/index.html"><span id="nv2"></span><span class="en">Crypto Risk Index</span></a>
+        <a href="/precheck/" class="active"><span id="nv3"></span><span class="en">Precheck</span></a>
+      </div>
+      <div class="nav-lang">
+        <button data-l="ko" class="on" onclick="setLang('ko')">KO</button>
+        <button data-l="en" onclick="setLang('en')">EN</button>
+        <button data-l="zh" onclick="setLang('zh')">中</button>
+        <button data-l="ja" onclick="setLang('ja')">日</button>
+      </div>
+    </div>
+  </nav>
+<div id="app">
+  <header>
+    <nav class="nav">
+      <a href="/precheck/">충동 점검</a>
+      <a href="/precheck/thesis/">왜 사는가</a>
+      <a href="/precheck/valuation/">가격은 말이 되는가</a>
+      <a href="/precheck/position/">얼마나 살까</a>
+      <a class="on">투자 원칙</a>
+      <a href="/precheck/checklist/">최종 확인서</a>
+    </nav>
+    <div class="hero">
+      <div class="k">F29 CONSTITUTION · 헌법</div>
+      <div class="t">F29의 원칙은 더 많이 벌기 위한 말이 아닙니다.<br><b>틀렸을 때 살아남기 위한 규율</b>입니다.</div>
+    </div>
+  </header>
+
+  <div class="principles" id="list"></div>
+
+  <div class="close">
+    <div class="t">원칙은 읽으라고 있는 것이 아니라, 어길 때 손실을 줄이라고 있는 것입니다.</div>
+    <div class="s">매수 버튼을 누르기 직전, 이 중 하나라도 어기고 있지 않은지 — 그때 다시 보세요.</div>
+  </div>
+  <p class="fineprint">
+    이 원칙들은 수익을 보장하지 않습니다.<br>
+    다만 큰 손실을 피할 확률은 높여줄 수 있습니다.
+  </p>
+  <p class="disclaimer">
+    교육·자기점검 목적 · 특정 종목의 매수·매도 추천이 아님<br>
+    투자 판단과 책임은 이용자 본인에게 있습니다
+  </p>
+</div>
+  <footer>
+    <div class="foot-in">
+      <div class="foot-brand mono">F29 · f29.io</div>
+      <div class="foot-contact" id="footContact"></div>
+      <div class="foot-dis" id="disclaimer"></div>
+      <div class="foot-copy" id="footCopy"></div>
+    </div>
+  </footer>
+<script>
+(function(){
+  var P = [
+    { s:"PASS는 \"맞다\"가 아니라 \"틀렸을 때 대비가 됐다\"는 뜻이다.",
+      d:"F29의 모든 PASS는 정답 보증이 아니라 생존 준비의 확인이다. 이걸 먼저 이해해야 뒤 원칙이 다 연결된다.", tag:"전체 관통", anchor:true, group:"Ⅰ. 정의" },
+
+    { s:"실패조건을 쓰지 못하면, 그것은 테제가 아니라 희망이다.",
+      d:"틀렸을 때 접을 선이 없는 판단은 판단이 아니라 믿음이다.", tag:"왜 사는가", anchor:true, group:"Ⅱ. 테제" },
+    { s:"매수 이유는 누구나 적는다. 언제 틀렸다고 인정할지를 먼저 적는 사람이 살아남는다.",
+      d:"매수 이유보다 매도 이유를 먼저 적어야 사고가 식는다.", tag:"왜 사는가" },
+    { s:"실패조건은 가격이 아니라 관찰 가능한 사실이어야 한다.",
+      d:"가격 하락은 실패조건이 아니다. ASP 하락·수주 감소·점유율 하락이 실패조건이다.", tag:"왜 사는가" },
+    { s:"시간축 없는 테제는 매일 가격만 보게 만든다.",
+      d:"언제 검증되는지 정하지 않으면, 검증 대신 호가창을 본다.", tag:"왜 사는가" },
+    { s:"오늘도 같은 가격이면 다시 사겠는가. 아니라면, 그건 이미 물린 것이다.",
+      d:"보유 중이면 손실 때문에 합리화한다. 이 질문 하나가 합리화를 걷어낸다.", tag:"왜 사는가" },
+
+    { s:"좋은 기업도, 나쁜 가격에 사면 나쁜 투자가 된다.",
+      d:"기업의 질과 가격의 질은 별개다. 둘 다 봐야 한다.", tag:"가격은 말이 되는가", anchor:true, group:"Ⅲ. 가격" },
+    { s:"버블은 늘 \"안 비싸 보인다\"에서 시작한다. \"싸다\"는 판단이 아니라 편향일 수 있다.",
+      d:"싸다고 생각하는 이유를 못 적으면, 그건 판단이 아니라 느낌이다.", tag:"가격은 말이 되는가" },
+    { s:"가격이 숫자보다 먼저 달렸다면, 내가 사는 것은 실적이 아니라 기대다.",
+      d:"기대는 언젠가 실적으로 확인받는다. 못 받으면 한 번에 빠진다.", tag:"가격은 말이 되는가" },
+    { s:"좋은 가격은 싼 가격이 아니라, 틀렸을 때 인정할 선이 있는 가격이다.",
+      d:"PASS는 가격이 맞다는 뜻이 아니라 인정할 준비가 됐다는 뜻이다.", tag:"가격은 말이 되는가" },
+
+    { s:"좋은 종목도, 나쁜 비중으로 사면 나쁜 투자가 된다.",
+      d:"확신과 비중은 다른 문제다. 확신이 커도 감당 가능한 크기가 상한이다.", tag:"얼마나 살까", anchor:true, group:"Ⅳ. 비중" },
+    { s:"비중 규율은 더 벌려는 게 아니라, 한 번의 실수로 끝나지 않게 하는 것이다.",
+      d:"분산은 몰라서 하는 게 아니라, 내가 틀릴 수 있다는 걸 알아서 한다.", tag:"얼마나 살까" },
+    { s:"감당 못 할 손실은 결국 가장 나쁜 자리에서 손절하게 된다.",
+      d:"버틸 수 없는 비중은 공포가 대신 판단한다. 그 자리는 늘 바닥 근처다.", tag:"얼마나 살까" },
+    { s:"손절선을 안 정하면, 시장이 대신 정해준다. 보통 최악의 자리에서.",
+      d:"사고 나서 정하는 손절선은 손절선이 아니다. 지금, 숫자로.", tag:"얼마나 살까" },
+
+    { s:"규율은 예측이 아니다. 내가 틀렸을 때 무너지는 속도를 늦추는 장치다.",
+      d:"맞히려는 도구가 아니라, 틀려도 살아남게 하는 도구다.", tag:"충동 점검", anchor:true, group:"Ⅴ. 규율" }
+  ];
+  var host = document.getElementById("list");
+  var curGroup = null;
+  P.forEach(function(p,i){
+    if (p.group && p.group !== curGroup){
+      curGroup = p.group;
+      var g = document.createElement("div");
+      g.className = "group";
+      g.textContent = p.group;
+      host.appendChild(g);
+    }
+    var d = document.createElement("div");
+    d.className = "p" + (p.anchor ? " anchor" : "");
+    d.innerHTML =
+      '<div class="num">'+String(i+1).padStart(2,"0")+'</div>' +
+      '<div class="body">' +
+        '<div class="stmt"></div>' +
+        '<div class="desc"></div>' +
+        '<span class="tag"></span>' +
+      '</div>';
+    d.querySelector(".stmt").textContent = p.s;
+    d.querySelector(".desc").textContent = p.d;
+    d.querySelector(".tag").textContent = "↳ " + p.tag;
+    host.appendChild(d);
+  });
+})();
+</script>
+<script>
+(function(){
+  var HEADER_T={
+    ko:{nv1:"미국주식 돈의 흐름",nv2:"비트코인 위험지수",nv3:"뇌동매매 체크",contactLabel:"문의 및 제안",
+        disclaimer:"F29는 시장 위험 상태와 돈의 흐름을 정리해 보여주는 참고 도구입니다. 매수·매도 신호가 아니며, 투자 판단과 그 결과는 본인에게 있습니다."},
+    en:{nv1:"Money Flow",nv2:"Risk Index",nv3:"Precheck",contactLabel:"Contact & suggestions",
+        disclaimer:"F29 is a reference tool that organizes market risk states and money flow. It is not a buy/sell signal; investment decisions and their outcomes are your own."},
+    zh:{nv1:"资金流向",nv2:"风险指数",nv3:"冲动交易检查",contactLabel:"咨询与建议",
+        disclaimer:"F29 是整理市场风险状态与资金流向的参考工具。并非买卖信号，投资决策及其结果由您自行承担。"},
+    ja:{nv1:"資金の流れ",nv2:"リスク指数",nv3:"衝動売買チェック",contactLabel:"お問い合わせ・ご提案",
+        disclaimer:"F29 は市場のリスク状態と資金の流れを整理して示す参考ツールです。売買シグナルではなく、投資判断とその結果はご自身に帰属します。"}
+  };
+  function applyHF(l){
+    var t=HEADER_T[l]||HEADER_T.ko;
+    var set=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+    set("nv1",t.nv1);set("nv2",t.nv2);set("nv3",t.nv3);set("disclaimer",t.disclaimer);
+    var _u="admin",_d="f29"+".io",fc=document.getElementById("footContact");
+    if(fc){fc.innerHTML=t.contactLabel+' <span class="em">'+_u+String.fromCharCode(64)+_d+'</span>';}
+    document.querySelectorAll(".nav-lang button").forEach(function(b){b.classList.toggle("on",b.dataset.l===l);});
+  }
+  window.setLang=function(l){applyHF(l);};
+  var cp=document.getElementById("footCopy");
+  if(cp){cp.innerHTML="Copyright © 2026 F29. All Rights Reserved.<br>F29의 콘텐츠·UI·질문 구조·게이트 로직·디자인 및 소스코드는 저작권법의 보호를 받습니다.<br>사전 서면 허가 없는 복제·배포·재게시·상업적 이용 및 유사 서비스 제작을 금지합니다. 위반 시 민·형사상 법적 조치를 취할 수 있습니다.";}
+  var nl=(navigator.language||"ko").slice(0,2);
+  applyHF(["ko","en","zh","ja"].indexOf(nl)>=0?nl:"ko");
+})();
+</script>
+</body>
+</html>
