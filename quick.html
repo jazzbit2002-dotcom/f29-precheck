@@ -6,6 +6,11 @@
 <title>F29 투자 플레이북 · 30초 점검</title>
 <meta name="description" content="매수 버튼을 누르기 전 30초. 5가지만 확인하면 충동인지 판단인지 갈립니다.">
 <meta name="theme-color" content="#0A0E17">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2GH6LTYB3R"></script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());gtag('config','G-2GH6LTYB3R');
+</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css">
@@ -150,14 +155,14 @@ footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 46px}
     </a>
     <a class="mode" href="/precheck/full/">
       <div class="tt">3분 점검</div>
-      <div class="ss">6단계로 깊게 검증</div>
+      <div class="ss">전문가급 심층 검증</div>
       <span class="tag">큰돈 투자 전</span>
     </a>
   </div>
 
   <div class="hl">
-    <h1>투자하기 전에</h1>
-    <p>좋은 투자는 예측에서 시작하지 않습니다. <b>검증에서 시작합니다.</b><br>5가지에 모두 YES면 — 최소한 충동은 아닙니다.</p>
+    <h1 id="hl-title">투자하기 전에</h1>
+    <p id="hl-sub">좋은 투자는 예측에서 시작하지 않습니다. <b>검증에서 시작합니다.</b><br>5가지에 모두 YES면 — 최소한 충동은 아닙니다.</p>
   </div>
 
   <div class="qs" id="qs"></div>
@@ -192,6 +197,43 @@ footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 46px}
 (function(){
   "use strict";
   var el=function(id){return document.getElementById(id);};
+
+  // ===== ctx 분기 (/stock/ CTA 딥링크: ?ctx=chase|average) =====
+  var CTX_COPY={
+    chase:{
+      title:"지금, 오르는 걸 보고 계신가요?",
+      sub:'상승이 이어지는 걸 보면 판단보다 조급함이 앞서기 쉽습니다. <b>5가지부터 확인하세요.</b>',
+      passD:"이 결과는 <b>조급함이 앞서지 않은 상태</b>라는 확인이며, 판단의 근거가 아닙니다.",
+      holdD:"<b>조급함이 앞선 상태</b>로 분류됩니다. 하루 뒤 재점검이 이 도구의 기준입니다."
+    },
+    average:{
+      title:"지금, 내려가는 걸 보고 계신가요?",
+      sub:'하락이 이어지면 손실 회피 심리가 판단을 앞섭니다. <b>5가지부터 확인하세요.</b>',
+      passD:"이 결과는 <b>손실 회피 심리가 앞서지 않은 상태</b>라는 확인이며, 판단의 근거가 아닙니다.",
+      holdD:"<b>손실 회피 심리가 앞선 상태</b>로 분류됩니다. 하루 뒤 재점검이 이 도구의 기준입니다."
+    }
+  };
+  function getCtx(){
+    try{
+      var v=new URLSearchParams(window.location.search).get("ctx");
+      return (v==="chase"||v==="average") ? v : null; // 화이트리스트 외 값·없음 → 기본 폴백
+    }catch(e){ return null; }
+  }
+  var CTX=getCtx();
+  if(CTX && CTX_COPY[CTX]){
+    var c=CTX_COPY[CTX];
+    var ht=el("hl-title"), hs=el("hl-sub");
+    if(ht) ht.textContent=c.title;
+    if(hs) hs.innerHTML=c.sub;
+  }
+  // GA4: 기존 config 재사용 — 베이스 스니펫/측정ID 여기서 삽입하지 않음.
+  // window.gtag가 이미 로드돼 있을 때만 이벤트 발사(중복 삽입 방지, 없으면 조용히 skip).
+  try{
+    if(typeof window.gtag==="function"){
+      window.gtag("event","precheck_open",{ctx: CTX || "default"});
+    }
+  }catch(e){}
+
   var Q=[
     { n:"01", t:"지금 사는 이유가 충동이 아닌가?", sub:"뉴스·급등 보고 급해진 게 아니라 미리 세운 근거가 있다" },
     { n:"02", t:"틀렸을 때 팔 조건을 정했나?", sub:"실패조건 — 가격이 아니라 관찰 가능한 사실로" },
@@ -241,7 +283,7 @@ footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 46px}
       res.setAttribute("data-s","pass");
       el("res-bar").textContent="30초 점검 · PASS";
       v.textContent="PASS · 충동은 아닙니다";
-      dd.innerHTML="단 이건 <b>사라</b>가 아니라 <b>충동은 아니다</b>라는 뜻입니다. 정한 손절선을 지키세요.";
+      dd.innerHTML=(CTX && CTX_COPY[CTX]) ? CTX_COPY[CTX].passD : "이 결과는 <b>충동이 앞서지 않은 상태</b>라는 확인이며, 판단의 근거가 아닙니다.";
       nx.style.display="";
       el("next-k").textContent="더 신중하게";
       el("next-t").innerHTML="큰돈이 걸렸다면, <b>왜 사는지·가격은 맞는지·얼마나 살지</b>까지 6단계로 검증하세요.";
@@ -250,7 +292,7 @@ footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 46px}
       res.setAttribute("data-s","hold");
       el("res-bar").textContent="30초 점검 · 보류";
       v.textContent="보류 · "+noCount+"가지가 걸렸습니다";
-      dd.innerHTML="걸린 항목은 대부분 감정입니다. <b>오늘은 사지 않습니다.</b> 지금 안 사도 기회는 다시 옵니다.";
+      dd.innerHTML=(CTX && CTX_COPY[CTX]) ? CTX_COPY[CTX].holdD : "<b>걸린 항목이 있는 상태</b>로 분류됩니다. 하루 뒤 재점검이 이 도구의 기준입니다.";
       nx.style.display="";
       el("next-k").textContent="왜 걸렸나";
       el("next-t").innerHTML="무엇이 부족한지 6단계에서 하나씩 확인하고, 정직하게 다시 채워 보세요.";
