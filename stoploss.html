@@ -112,6 +112,7 @@ h1 .k{color:var(--amber)}
 .vdesc{font-size:14px;color:var(--txt2);line-height:1.65;margin-top:14px}
 .vdesc b{color:var(--txt)}
 .vnext{margin-top:14px;padding-top:13px;border-top:1px dashed var(--line2);font-size:13px;color:var(--txt2)}
+.vprinciple{border-top:1px solid var(--line2);font-size:12px;color:var(--txt3);letter-spacing:.1px}
 .vnext b{color:var(--txt);font-family:'JetBrains Mono',monospace}
 
 /* 방어선 게이지 (C안 흡수) */
@@ -445,6 +446,7 @@ h1 .k{color:var(--amber)}
     if(t.next) html+='<div class="vnext">'+t.next.replace(/(정규장 [가-힣]+)/,'<b>$1</b>')+'</div>';
     if(r.profitGuard) html+='<div class="vnext">입력한 손절가격이 평균단가보다 높습니다. 이 선은 손실 제한선이 아니라 수익 보호선으로 동작합니다.</div>';
     if(t.remind){ html+='<div class="vnext">'; t.remind.forEach(function(x){html+='· '+x+'<br>';}); html+='</div>'; }
+    html+='<div class="vnext vprinciple">악재·호재는 이 판정을 바꾸지 않습니다. 손절은 가격의 규칙이고, 뉴스는 다음 매수 판단의 재료입니다.</div>';
     html+='</div></div>';
 
     html+=gauge;
