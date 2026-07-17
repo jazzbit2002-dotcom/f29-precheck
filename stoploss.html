@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>손절의 신 | F29</title>
+<meta name="description" content="프리장과 장중 변동에 흔들리지 않도록 평균단가와 손절선을 입력해 시가 급락 예외와 종가 손절 여부를 확인하는 규칙 계산 도구입니다.">
+<meta name="theme-color" content="#0B0D10">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap">
+<style>
+:root{
+  --bg:#0B0D10; --panel:#12161B; --panel2:#0E1216; --line:#1E252D; --line2:#2A333D;
+  --txt:#E6EAEF; --txt2:#8A96A3; --txt3:#5A6570;
+  --wait:#6B7785; --warn:#E0A63C; --hit:#E5484D; --defend:#3DD8B0; --amber:#F5B841;
+  --teal:#3DD8B0; --gold:#D8B45F;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--txt);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.wrap{max-width:540px;margin:0 auto;padding:0 20px 56px}
+
+/* ── 히어로 (판정 기계) ── */
+.gauge-head{border-bottom:1px solid var(--line);padding:28px 0 22px;position:relative}
+.gauge-head::before{content:"";position:absolute;left:0;bottom:-1px;width:64px;height:2px;background:var(--amber)}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--txt3);text-transform:uppercase}
+h1{font-size:34px;font-weight:800;letter-spacing:-1.5px;margin:10px 0 0;line-height:1}
+h1 .k{color:var(--amber)}
+.serial{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);margin-top:8px;letter-spacing:1px}
+.decree{font-size:14px;color:var(--txt2);line-height:1.75;margin-top:18px}
+.decree b{color:var(--txt)}
+.svc{font-size:13px;color:var(--txt3);margin-top:12px;line-height:1.6}
+
+/* ── 규칙 확인 카드 ── */
+.section-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--txt3);margin:26px 0 12px;text-transform:uppercase}
+.rulecard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:18px}
+.rulecard .rt{font-size:14px;font-weight:700;margin-bottom:12px}
+.rulelist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.rulelist li{display:flex;gap:10px;font-size:13px;color:var(--txt2);line-height:1.5}
+.rulelist li .n{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--amber);flex-shrink:0;padding-top:1px}
+.rulecheck{display:flex;align-items:center;gap:11px;margin-top:16px;padding:13px 14px;border-radius:9px;background:var(--panel);border:1px solid var(--line2);width:100%;color:var(--txt2);font-size:13.5px;font-weight:600;text-align:left}
+.rulecheck.on{background:rgba(245,184,65,.1);border-color:var(--amber);color:var(--txt)}
+.rulecheck .box{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--txt3);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--bg);font-size:13px;font-weight:800}
+.rulecheck.on .box{background:var(--amber);border-color:var(--amber)}
+
+/* ── 입력 카드 ── */
+.inputs{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:14px}
+.field{margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:13px;color:var(--txt2);display:block;margin-bottom:7px;font-weight:600}
+.field .hint{font-size:11px;color:var(--txt3);font-weight:400;margin-left:4px}
+.field input[type=text]{font-family:'JetBrains Mono',monospace;font-size:18px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:12px 13px;color:var(--txt);width:100%}
+.field input::placeholder{color:var(--txt3);font-weight:400}
+.seg{display:flex;gap:6px}
+.seg.g4{flex-wrap:wrap}
+.seg .s{flex:1;min-width:calc(50% - 3px);text-align:center;font-size:13px;padding:11px 8px;border:1px solid var(--line2);border-radius:8px;color:var(--txt2);background:var(--panel2);min-height:44px}
+.seg .s.on{border-color:var(--amber);color:var(--amber);background:rgba(245,184,65,.08);font-weight:700}
+.seg .s .sub{display:block;font-size:10px;color:var(--txt3);margin-top:2px;font-weight:400}
+.seg .s.on .sub{color:var(--amber)}
+.ptype-note{font-size:11px;color:var(--txt3);margin-top:8px;line-height:1.5}
+.condfield{display:none}
+.condfield.show{display:block}
+
+.gobtn{width:100%;margin-top:18px;padding:15px;border-radius:10px;border:none;font-size:15px;font-weight:800;background:var(--amber);color:#1a1400;letter-spacing:-.2px}
+.gobtn:disabled{background:var(--line2);color:var(--txt3);cursor:not-allowed}
+.subbtns{display:flex;gap:8px;margin-top:8px}
+.subbtns button{flex:1;padding:11px;border-radius:9px;border:1px solid var(--line2);background:transparent;color:var(--txt2);font-size:13px;font-weight:600}
+
+.restale{display:none;margin-top:16px;padding:11px 14px;border-radius:9px;background:rgba(224,166,60,.12);border:1px solid rgba(224,166,60,.4);font-size:13px;color:var(--warn);font-weight:600}
+.restale.show{display:block}
+
+/* ── 상태등 ── */
+.lamps{display:flex;gap:8px;margin-top:16px;padding:15px;background:var(--panel2);border:1px solid var(--line);border-radius:10px}
+.lamp{flex:1;text-align:center}
+.lamp .dot{width:11px;height:11px;border-radius:50%;margin:0 auto 8px;background:var(--line2)}
+.lamp.on .dot{box-shadow:0 0 14px currentColor}
+.lamp.wait.on .dot{background:var(--wait);color:var(--wait)}
+.lamp.warn.on .dot{background:var(--warn);color:var(--warn)}
+.lamp.hit.on .dot{background:var(--hit);color:var(--hit)}
+.lamp.defend.on .dot{background:var(--defend);color:var(--defend)}
+.lamp .lb{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.5px;color:var(--txt3)}
+.lamp.on .lb{color:var(--txt2)}
+
+/* ── 결과 카드 ── */
+.result{display:none;margin-top:16px}
+.result.show{display:block}
+.verdict{border:1px solid var(--line2);border-radius:12px;overflow:hidden;background:var(--panel)}
+.verdict[data-tone=wait]{border-color:var(--line2)}
+.verdict[data-tone=warn]{border-color:var(--warn);background:linear-gradient(180deg,rgba(224,166,60,.09),var(--panel))}
+.verdict[data-tone=hit]{border-color:var(--hit);background:linear-gradient(180deg,rgba(229,72,77,.09),var(--panel))}
+.verdict[data-tone=defend]{border-color:var(--defend);background:linear-gradient(180deg,rgba(61,216,176,.09),var(--panel))}
+.verdict-bar{display:flex;justify-content:space-between;align-items:center;padding:9px 16px;border-bottom:1px solid var(--line)}
+.verdict-bar .id{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--txt2)}
+.verdict-bar .tiny{font-size:10px;color:var(--txt3)}
+.verdict-body{padding:20px 18px}
+.vstate{display:flex;align-items:center;gap:12px}
+.vstate .ico{width:38px;height:38px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.verdict[data-tone=wait] .ico{background:rgba(107,119,133,.16)}
+.verdict[data-tone=warn] .ico{background:rgba(224,166,60,.16)}
+.verdict[data-tone=hit] .ico{background:rgba(229,72,77,.16)}
+.verdict[data-tone=defend] .ico{background:rgba(61,216,176,.16)}
+.vstate .ttl{font-size:21px;font-weight:800;letter-spacing:-.5px}
+.verdict[data-tone=wait] .ttl{color:var(--txt)}
+.verdict[data-tone=warn] .ttl{color:var(--warn)}
+.verdict[data-tone=hit] .ttl{color:var(--hit)}
+.verdict[data-tone=defend] .ttl{color:var(--defend)}
+.vdesc{font-size:14px;color:var(--txt2);line-height:1.65;margin-top:14px}
+.vdesc b{color:var(--txt)}
+.vnext{margin-top:14px;padding-top:13px;border-top:1px dashed var(--line2);font-size:13px;color:var(--txt2)}
+.vnext b{color:var(--txt);font-family:'JetBrains Mono',monospace}
+
+/* 방어선 게이지 (C안 흡수) */
+.linegauge{margin-top:16px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:18px 18px 14px}
+.lg-cap{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.5px}
+.rail{position:relative;height:150px;margin:14px 4px}
+.rail .axis{position:absolute;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%);background:linear-gradient(var(--defend),var(--warn),var(--hit));opacity:.3;border-radius:2px}
+.rail .mk{position:absolute;left:0;right:0;height:0}
+.rail .mk .lbl{position:absolute;font-family:'JetBrains Mono',monospace;font-size:10px;top:-16px}
+.rail .mk.avg{border-top:1px solid var(--steel,#5B7085);opacity:.6}
+.rail .mk.avg .lbl{right:0;color:#5B7085}
+.rail .mk.stop{border-top:2px dashed var(--hit)}
+.rail .mk.stop .lbl{right:0;color:var(--hit);font-weight:700}
+.rail .mk.stop .val{position:absolute;left:0;top:-17px;color:var(--hit);font-weight:800;font-size:12px;font-family:'JetBrains Mono',monospace}
+.rail .mk.gap{border-top:1px dotted var(--warn);opacity:.7}
+.rail .mk.gap .lbl{right:0;color:var(--warn);font-size:9px}
+.rail .node{position:absolute;left:50%;transform:translate(-50%,-50%);z-index:3}
+.rail .node .dot{width:15px;height:15px;border-radius:50%}
+.rail .node .flag{position:absolute;left:22px;top:50%;transform:translateY(-50%);white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:800;padding:3px 8px;border-radius:5px;color:#0a0a0a}
+.rail .node .flag::before{content:"";position:absolute;left:-5px;top:50%;transform:translateY(-50%);border:5px solid transparent}
+
+/* 수치 표 */
+.readout{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.cell{background:var(--panel);padding:12px 13px}
+.cell .k{font-size:10px;color:var(--txt3);letter-spacing:.3px}
+.cell .v{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;margin-top:5px}
+.cell .v.neg{color:var(--hit)}
+.cell .v.pos{color:var(--defend)}
+
+/* INVALID */
+.invalid{border:1px solid var(--warn);border-radius:12px;background:linear-gradient(180deg,rgba(224,166,60,.09),var(--panel));padding:20px 18px}
+.invalid .ttl{font-size:18px;font-weight:800;color:var(--warn)}
+.invalid .msg{font-size:14px;color:var(--txt2);margin-top:10px}
+
+/* 규칙 리마인드 */
+.remind{margin-top:22px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:18px}
+.remind .h{font-size:13px;font-weight:700;margin-bottom:12px}
+.remind ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.remind li{font-size:13px;color:var(--txt2);line-height:1.5}
+.remind li b{color:var(--txt)}
+.remind .last{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;font-weight:700;color:var(--amber);line-height:1.6}
+
+.disclaimer{margin-top:20px;font-size:11px;color:var(--txt3);line-height:1.7}
+</style>
+</head>
+<body>
+
+<div id="f29-header"></div>
+
+<div class="wrap">
+  <header class="gauge-head">
+    <div class="eyebrow">F29 · DISCIPLINE INSTRUMENT</div>
+    <h1>손절의 <span class="k">신</span></h1>
+    <div class="serial mono">STOPLOSS-VERDICT-ENGINE · v1.0 · 7-STATE</div>
+    <p class="decree">손절도 기술입니다. 손실을 통제해야 <b>계좌를 지키고</b>, 계좌를 지켜야 시장에서 오래 살아남아 <b>다음 기회</b>를 잡을 수 있습니다. 계좌가 무너지면 다음 기회도 없습니다.</p>
+    <p class="svc">프리장과 장중 가격에 흔들리지 않도록, 내가 정한 손절선을 시가와 종가 기준으로 확인합니다.</p>
+  </header>
+
+  <!-- 규칙 확인 -->
+  <div class="section-label">// RULE — 먼저 확인</div>
+  <div class="rulecard">
+    <div class="rt">이 도구는 아래 규칙으로 판정합니다.</div>
+    <ul class="rulelist">
+      <li><span class="n">1</span><span>프리장, 애프터마켓, 야간거래, NXT, 정규장 장중 가격은 경고로만 봅니다.</span></li>
+      <li><span class="n">2</span><span>정규장 시가가 손절선보다 5% 이상 낮으면 시가 급락 예외가 적용됩니다.</span></li>
+      <li><span class="n">3</span><span>시가 급락 예외가 아니면 오늘 종가로 최종 판정합니다.</span></li>
+      <li><span class="n">4</span><span>종가가 손절선 이하에서 끝나면 손절이 확정됩니다.</span></li>
+      <li><span class="n">5</span><span>손절이 확정되면 다음 정규장 개장에 정리합니다.</span></li>
+      <li><span class="n">6</span><span>판정 도중 손절선을 더 낮추지 않습니다.</span></li>
+    </ul>
+    <button class="rulecheck" id="rulecheck" type="button" aria-pressed="false">
+      <span class="box" id="rulebox"></span><span>위 규칙을 확인했습니다.</span>
+    </button>
+  </div>
+
+  <!-- 입력 -->
+  <div class="section-label">// INPUT</div>
+  <div class="inputs">
+    <div class="field">
+      <label for="avg">평균단가 <span class="hint">여러 번 매수했다면 현재 평균단가</span></label>
+      <input type="text" id="avg" inputmode="decimal" placeholder="예: 630.77" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>손절선 방식</label>
+      <div class="seg" id="method">
+        <button class="s on" data-m="price" type="button">직접 가격</button>
+        <button class="s" data-m="percent" type="button">손실률</button>
+      </div>
+    </div>
+    <div class="field condfield show" id="f-price">
+      <label for="stopprice">손절가격</label>
+      <input type="text" id="stopprice" inputmode="decimal" placeholder="예: 548.77" autocomplete="off">
+    </div>
+    <div class="field condfield" id="f-percent">
+      <label for="lossp">손실률 <span class="hint">0 초과 100 미만</span></label>
+      <input type="text" id="lossp" inputmode="decimal" placeholder="예: 13" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="obs">확인 가격 <span class="hint">지금 확인한 가격</span></label>
+      <input type="text" id="obs" inputmode="decimal" placeholder="예: 515.18" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>가격 종류</label>
+      <div class="seg g4" id="ptype">
+        <button class="s" data-p="offhours" type="button">정규장 외<span class="sub">프리·애프터·야간·NXT</span></button>
+        <button class="s" data-p="open" type="button">정규장 시가</button>
+        <button class="s" data-p="intraday" type="button">정규장 장중</button>
+        <button class="s" data-p="close" type="button">정규장 종가</button>
+      </div>
+      <div class="ptype-note">가격이 언제 형성된 값인지 정확히 선택해야 판정이 달라지지 않습니다.</div>
+    </div>
+
+    <button class="gobtn" id="go" type="button" disabled>내 손절 규칙 확인하기</button>
+    <div class="restale" id="restale">입력값이 바뀌었습니다. 다시 판정해주세요.</div>
+    <div class="subbtns">
+      <button id="reset" type="button">입력 초기화</button>
+    </div>
+  </div>
+
+  <!-- 상태등 -->
+  <div class="lamps" id="lamps" aria-hidden="true">
+    <div class="lamp wait" data-l="wait"><div class="dot"></div><div class="lb">WAIT</div></div>
+    <div class="lamp warn" data-l="warn"><div class="dot"></div><div class="lb">GAP</div></div>
+    <div class="lamp hit" data-l="hit"><div class="dot"></div><div class="lb">HIT</div></div>
+    <div class="lamp defend" data-l="defend"><div class="dot"></div><div class="lb">DEFEND</div></div>
+  </div>
+
+  <!-- 결과 -->
+  <div class="result" id="result" aria-live="polite"></div>
+
+  <!-- 규칙 리마인드 -->
+  <div class="remind">
+    <div class="h">손절 규칙 5가지</div>
+    <ol>
+      <li><b>손절선은 매수 전에 정합니다.</b></li>
+      <li><b>프리장과 장중 가격은 경고로만 봅니다.</b></li>
+      <li><b>시가 급락 예외가 아니면 종가로 판정합니다.</b></li>
+      <li><b>손절이 확정되면 손절선을 다시 낮추지 않습니다.</b></li>
+      <li><b>손절 후 반등해도 당시 규칙이 틀린 것은 아닙니다.</b></li>
+    </ol>
+    <div class="last">손절은 바닥을 맞히는 기술이 아니라, 한 번의 실패로 계좌가 무너지지 않게 하는 기술입니다.</div>
+  </div>
+
+  <p class="disclaimer">이 도구는 사용자가 선택한 손절 규칙에 숫자를 대입해 결과를 보여주는 참고 도구입니다. 특정 종목의 매수, 매도 또는 수익을 보장하지 않으며 최종 판단과 주문 실행의 책임은 사용자에게 있습니다.</p>
+</div>
+
+<div id="f29-footer"></div>
+
+<!-- 공통 헤더/푸터 로더 (precheck와 동일 규격) -->
+<script src="/shared/f29-chrome.js?v=20260709b" data-active="sl" defer></script>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id);};
+  var GA=function(name,params){try{if(typeof window.gtag==="function")window.gtag("event",name,params||{});}catch(e){}};
+  GA("stoploss_view");
+
+  // ── 순수 판정 함수 (테스트 T01~T10·V01~V08 통과 검증본) ──
+  function round(n,d){var f=Math.pow(10,d);return Math.round(n*f)/f;}
+  function evaluateStoploss(inp){
+    if(!inp.ruleConfirmed) return {stateId:"SL-INVALID",error:"rule"};
+    var avg=inp.averagePrice;
+    if(avg==null||isNaN(avg)||avg<=0) return {stateId:"SL-INVALID",error:"avg"};
+    var stopLine;
+    if(inp.stopMethod==="price"){
+      if(inp.stopPrice==null||isNaN(inp.stopPrice)||inp.stopPrice<=0) return {stateId:"SL-INVALID",error:"stop"};
+      stopLine=inp.stopPrice;
+    }else if(inp.stopMethod==="percent"){
+      var lp=inp.lossPercent;
+      if(lp==null||isNaN(lp)||lp<=0||lp>=100) return {stateId:"SL-INVALID",error:"loss"};
+      stopLine=avg*(1-lp/100);
+    }else return {stateId:"SL-INVALID",error:"stop"};
+    var obs=inp.observedPrice;
+    if(obs==null||isNaN(obs)||obs<=0) return {stateId:"SL-INVALID",error:"observed"};
+    if(!inp.priceType) return {stateId:"SL-INVALID",error:"ptype"};
+    var gapLine=stopLine*0.95;
+    var pnl=(obs-avg)/avg*100, stopDist=(obs-stopLine)/stopLine*100;
+    var tag=obs<stopLine?"below":(stopDist<5?"near":"far");
+    var st;
+    if(inp.priceType==="offhours"||inp.priceType==="intraday") st=obs>stopLine?"SL-WAIT-ABOVE":"SL-WAIT-BELOW";
+    else if(inp.priceType==="open") st=obs<=gapLine?"SL-GAP-HIT":"SL-GAP-MISS";
+    else if(inp.priceType==="close") st=obs<=stopLine?"SL-CLOSE-HIT":"SL-CLOSE-DEFEND";
+    else return {stateId:"SL-INVALID",error:"ptype"};
+    return {stateId:st,averagePrice:avg,stopPrice:round(stopLine,4),gapLine:round(gapLine,4),
+      observedPrice:obs,pnlPercent:round(pnl,2),stopDistancePercent:round(stopDist,2),
+      distanceTag:tag,profitGuard:(inp.stopMethod==="price"&&stopLine>avg)};
+  }
+
+  // ── 결과 템플릿 (고정 문구, 자유생성 없음) ──
+  var TPL={
+    "SL-WAIT-ABOVE":{tone:"wait",lamp:"wait",ttl:"아직 판정 전입니다",
+      body:"현재 가격은 손절선 위입니다. 정규장 시가의 급락 여부와 오늘 종가만 확인합니다.",
+      next:"다음 판정 시점: 정규장 시가 또는 종가"},
+    "SL-WAIT-BELOW":{tone:"warn",lamp:"warn",ttl:"손절선 아래지만 아직 판정 전입니다",
+      body:"현재 가격은 손절선 아래입니다. 하지만 정규장 외 가격과 장중 가격은 최종 판정에 쓰지 않습니다. 정규장 시가와 종가를 확인합니다.",
+      remind:["손절선을 더 낮추지 않습니다.","손절선 아래에서 추가매수하지 않습니다.","장중 가격만 보고 규칙을 바꾸지 않습니다."]},
+    "SL-GAP-HIT":{tone:"hit",lamp:"hit",ttl:"손절 조건이 확인됐습니다",
+      body:"정규장 시가가 급락 예외선 이하로 시작했습니다. 선택한 규칙에서는 종가를 기다리지 않습니다."},
+    "SL-GAP-MISS":{tone:"wait",lamp:"wait",ttl:"시가 급락 예외는 없습니다",
+      body:"정규장 시가가 급락 예외선 위에서 시작했습니다. 장중 가격으로 다시 판정하지 않고 오늘 종가를 확인합니다.",
+      next:"다음 판정 시점: 정규장 종가"},
+    "SL-CLOSE-HIT":{tone:"hit",lamp:"hit",ttl:"손절이 확정됐습니다",
+      body:"종가가 손절선 이하에서 끝났습니다. 선택한 규칙에서는 <b>다음 정규장 개장에 정리</b>합니다. 판정 후에는 반등을 기다리며 규칙을 바꾸지 않습니다."},
+    "SL-CLOSE-DEFEND":{tone:"defend",lamp:"defend",ttl:"손절선을 지켰습니다",
+      body:"종가가 손절선 위에서 끝났습니다. 오늘은 손절하지 않습니다. 장중에 손절선 아래로 내려갔더라도 최종 판정은 종가입니다."}
+  };
+  var INVALID_MSG={rule:"먼저 규칙을 확인해주세요.",avg:"평균단가를 입력해주세요.",
+    stop:"손절가격 또는 손실률을 입력해주세요.",loss:"손실률은 0%보다 크고 100%보다 작아야 합니다.",
+    observed:"확인 가격을 입력해주세요.",ptype:"가격 종류를 선택해주세요."};
+  var PTYPE_LABEL={offhours:"정규장 외",open:"정규장 시가",intraday:"정규장 장중",close:"정규장 종가"};
+  var ICONS={
+    wait:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7785" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    warn:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0A63C" stroke-width="2"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/></svg>',
+    hit:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E5484D" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>',
+    defend:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3DD8B0" stroke-width="2"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z"/></svg>'
+  };
+
+  // ── 상태 ──
+  var state={method:"price",ptype:null,confirmed:false,lastResult:null};
+
+  function parseNum(v){ if(v==null) return NaN; v=(""+v).replace(/,/g,"").trim(); if(v==="") return NaN; return Number(v); }
+
+  // 규칙 체크
+  $("rulecheck").addEventListener("click",function(){
+    state.confirmed=!state.confirmed;
+    this.classList.toggle("on",state.confirmed);
+    this.setAttribute("aria-pressed",state.confirmed?"true":"false");
+    $("rulebox").textContent=state.confirmed?"✓":"";
+    if(state.confirmed) GA("stoploss_rule_confirm");
+    syncGo(); markStale();
+  });
+
+  // 손절선 방식
+  $("method").addEventListener("click",function(e){
+    var b=e.target.closest(".s"); if(!b) return;
+    state.method=b.getAttribute("data-m");
+    this.querySelectorAll(".s").forEach(function(x){x.classList.toggle("on",x===b);});
+    $("f-price").classList.toggle("show",state.method==="price");
+    $("f-percent").classList.toggle("show",state.method==="percent");
+    syncGo(); markStale();
+  });
+
+  // 가격 종류
+  $("ptype").addEventListener("click",function(e){
+    var b=e.target.closest(".s"); if(!b) return;
+    state.ptype=b.getAttribute("data-p");
+    this.querySelectorAll(".s").forEach(function(x){x.classList.toggle("on",x===b);});
+    syncGo(); markStale();
+  });
+
+  // 입력 변경 → stale
+  ["avg","stopprice","lossp","obs"].forEach(function(id){
+    $(id).addEventListener("input",function(){ syncGo(); markStale(); });
+  });
+
+  function markStale(){
+    if(state.lastResult){ $("restale").classList.add("show"); }
+  }
+  function collect(){
+    return {averagePrice:parseNum($("avg").value),stopMethod:state.method,
+      stopPrice:parseNum($("stopprice").value),lossPercent:parseNum($("lossp").value),
+      observedPrice:parseNum($("obs").value),priceType:state.ptype,ruleConfirmed:state.confirmed};
+  }
+  function syncGo(){
+    // 규칙 확인 + 필수 필드가 채워졌을 때만 활성 (형식 검증은 판정 시)
+    var ok=state.confirmed && $("avg").value.trim() && $("obs").value.trim() && state.ptype &&
+      (state.method==="price"? $("stopprice").value.trim() : $("lossp").value.trim());
+    $("go").disabled=!ok;
+  }
+
+  function fmt(n){
+    if(n==null||isNaN(n)) return "-";
+    if(Number.isInteger(n)) return n.toLocaleString("en-US");
+    return (Math.round(n*10000)/10000).toLocaleString("en-US",{maximumFractionDigits:4});
+  }
+  function pct(n){ return (n>0?"+":"")+n.toFixed(2)+"%"; }
+
+  // 판정
+  $("go").addEventListener("click",function(){
+    if(this.disabled) return;
+    var r=evaluateStoploss(collect());
+    render(r);
+    state.lastResult=r;
+    $("restale").classList.remove("show");
+    GA(state.lastResult&&document.querySelector(".result.show")?"stoploss_calculate":"stoploss_calculate",
+       {price_type:state.ptype||"none",result_state:r.stateId,stop_input_method:state.method});
+    $("result").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+
+  $("reset").addEventListener("click",function(){
+    ["avg","stopprice","lossp","obs"].forEach(function(id){$(id).value="";});
+    state.ptype=null; state.confirmed=false; state.method="price"; state.lastResult=null;
+    $("rulecheck").classList.remove("on"); $("rulebox").textContent=""; $("rulecheck").setAttribute("aria-pressed","false");
+    $("method").querySelectorAll(".s").forEach(function(x){x.classList.toggle("on",x.getAttribute("data-m")==="price");});
+    $("ptype").querySelectorAll(".s").forEach(function(x){x.classList.remove("on");});
+    $("f-price").classList.add("show"); $("f-percent").classList.remove("show");
+    $("result").classList.remove("show"); $("result").innerHTML="";
+    $("restale").classList.remove("show");
+    setLamp(null); syncGo();
+    GA("stoploss_reset");
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+
+  function setLamp(which){
+    document.querySelectorAll("#lamps .lamp").forEach(function(l){
+      l.classList.toggle("on", which && l.getAttribute("data-l")===which);
+    });
+  }
+
+  function render(r){
+    var res=$("result"); res.classList.add("show");
+    if(r.stateId==="SL-INVALID"){
+      setLamp(null);
+      GA("stoploss_validation_error",{error_code:r.error});
+      res.innerHTML='<div class="invalid"><div class="ttl">입력값을 확인해주세요</div>'+
+        '<div class="msg">'+(INVALID_MSG[r.error]||"입력값을 확인해주세요.")+'</div></div>';
+      return;
+    }
+    var t=TPL[r.stateId]; setLamp(t.lamp);
+    var tagTxt = r.distanceTag==="below"?"손절선 아래":(r.distanceTag==="near"?"손절선까지 5% 미만":"손절선까지 5% 이상");
+
+    // 방어선 게이지 (WAIT-BELOW / CLOSE-HIT / CLOSE-DEFEND / GAP 계열에서 의미)
+    var gauge=buildGauge(r);
+
+    var html='<div class="verdict" data-tone="'+t.tone+'">'+
+      '<div class="verdict-bar"><span class="id">'+r.stateId+'</span><span class="tiny">선택한 규칙에 따른 계산 결과</span></div>'+
+      '<div class="verdict-body">'+
+        '<div class="vstate"><div class="ico">'+ICONS[t.lamp]+'</div><div class="ttl">'+t.ttl+'</div></div>'+
+        '<div class="vdesc">'+t.body+'</div>';
+    if(t.next) html+='<div class="vnext">'+t.next.replace(/(정규장 [가-힣]+)/,'<b>$1</b>')+'</div>';
+    if(r.profitGuard) html+='<div class="vnext">입력한 손절가격이 평균단가보다 높습니다. 이 선은 손실 제한선이 아니라 수익 보호선으로 동작합니다.</div>';
+    if(t.remind){ html+='<div class="vnext">'; t.remind.forEach(function(x){html+='· '+x+'<br>';}); html+='</div>'; }
+    html+='</div></div>';
+
+    html+=gauge;
+
+    html+='<div class="readout">'+
+      '<div class="cell"><div class="k">평균단가</div><div class="v mono">'+fmt(r.averagePrice)+'</div></div>'+
+      '<div class="cell"><div class="k">손절선</div><div class="v mono">'+fmt(r.stopPrice)+'</div></div>'+
+      '<div class="cell"><div class="k">시가 급락 예외선</div><div class="v mono">'+fmt(r.gapLine)+'</div></div>'+
+      '<div class="cell"><div class="k">확인 가격 · '+PTYPE_LABEL[r.__pt||state.ptype]+'</div><div class="v mono">'+fmt(r.observedPrice)+'</div></div>'+
+      '<div class="cell"><div class="k">평균단가 대비 손익률</div><div class="v mono '+(r.pnlPercent<0?"neg":"pos")+'">'+pct(r.pnlPercent)+'</div></div>'+
+      '<div class="cell"><div class="k">손절선 대비 거리 · '+tagTxt+'</div><div class="v mono '+(r.stopDistancePercent<0?"neg":"pos")+'">'+pct(r.stopDistancePercent)+'</div></div>'+
+      '</div>';
+    res.innerHTML=html;
+  }
+
+  // 방어선 게이지: 손절선을 기준(62%)에 고정, 가격을 상대 배치 (시세축 아님 — 상대 위치만)
+  function buildGauge(r){
+    var stop=r.stopPrice, gap=r.gapLine, avg=r.averagePrice, obs=r.observedPrice;
+    // 표시 범위: avg(위) ~ gap*0.97(아래) 사이를 매핑. 손절선=62% 고정 느낌 위해 비율 계산
+    var top=Math.max(avg,obs,stop)*1.01;
+    var bot=Math.min(gap,obs,stop)*0.985;
+    var span=top-bot||1;
+    function y(v){ return (1-(v-bot)/span)*100; } // 0=top,100=bot (%)
+    var below=obs<stop;
+    var nodeColor=below?"var(--hit)":"var(--defend)";
+    var flagBg=below?"var(--hit)":"var(--defend)";
+    return '<div class="linegauge"><div class="lg-cap"><span>▲ 높은 가격 · 안전</span><span>DEFENSE LINE</span></div>'+
+      '<div class="rail"><div class="axis"></div>'+
+      '<div class="mk avg" style="top:'+y(avg).toFixed(1)+'%"><span class="lbl">평균단가 '+fmt(avg)+'</span></div>'+
+      '<div class="mk stop" style="top:'+y(stop).toFixed(1)+'%"><span class="val">'+fmt(stop)+'</span><span class="lbl">손절선</span></div>'+
+      '<div class="mk gap" style="top:'+y(gap).toFixed(1)+'%"><span class="lbl">급락 예외선 '+fmt(gap)+'</span></div>'+
+      '<div class="node" style="top:'+y(obs).toFixed(1)+'%"><div class="dot" style="background:'+nodeColor+';box-shadow:0 0 0 5px '+(below?"rgba(229,72,77,.2)":"rgba(61,216,176,.2)")+',0 0 16px '+nodeColor+'"></div>'+
+        '<div class="flag" style="background:'+flagBg+'"><span style="position:absolute;left:-5px;top:50%;transform:translateY(-50%);border:5px solid transparent;border-right-color:'+flagBg+'"></span>확인가 '+fmt(obs)+'</div></div>'+
+      '</div><div class="lg-cap" style="margin-top:10px"><span>▼ 낮은 가격 · 위험</span><span>손절선 기준 상대 위치</span></div></div>';
+  }
+
+  syncGo();
+})();
+</script>
+</body>
+</html>
