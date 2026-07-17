@@ -91,6 +91,13 @@ button:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
 .result.stop .result-big{color:var(--stop)}
 .result.pass .result-big{color:var(--pass)}
 .result-text{font-size:13.5px; color:var(--txt); line-height:1.65}
+.slgate{display:flex;align-items:center;gap:12px;margin-top:14px;padding:16px 18px;border-radius:13px;text-decoration:none;border:1.5px solid rgba(61,216,176,.4);background:linear-gradient(180deg,rgba(61,216,176,.08),#131A28);transition:all .15s}
+.slgate:hover{border-color:#3DD8B0}
+.slgate-l{flex:1}
+.slgate-k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:#3DD8B0;font-weight:700;margin-bottom:4px}
+.slgate-t{font-size:15px;font-weight:800;color:#E8EDF7;letter-spacing:-.3px}
+.slgate-s{font-size:12.5px;color:#8B9AB5;margin-top:4px;line-height:1.45}
+.slgate-ar{font-size:20px;color:#3DD8B0;font-weight:700}
 .result-sub{margin-top:14px; padding-top:13px; border-top:1px dashed #5A6B8444;
   font-size:13px; color:var(--txt2); font-style:italic}
 
@@ -224,6 +231,15 @@ footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 46px}
     </div>
   </div>
 
+  <a class="slgate" id="slgate" href="/stoploss/" style="display:none">
+    <div class="slgate-l">
+      <div class="slgate-k">매수를 결정했다면</div>
+      <div class="slgate-t">손절선을 먼저 정하세요 · 손절의 신</div>
+      <div class="slgate-s">사는 순간이 아니라, 틀렸을 때 정리할 선을 지금 정합니다.</div>
+    </div>
+    <span class="slgate-ar">→</span>
+  </a>
+
   <p class="disclaimer" id="footer"></p>
 </div>
   <div class="stepnav"><a class="pv" href="/precheck/principles/"><span class="d">← 이전</span><span class="l">⑤ 원칙</span></a><a class="nx" href="/precheck/"><span class="d">다음 →</span><span class="l">30초 점검 다시</span></a></div>
@@ -329,12 +345,14 @@ footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 46px}
       el("result-big").textContent="PASS";
       el("result-text").innerHTML="이것은 <b>수익 가능성이 높다는 뜻이 아닙니다.</b> 당신이 틀렸을 때를 미리 준비했다는 뜻입니다.";
       el("result-sub").textContent="이제 시장이 결정합니다.";
+      var sg=el("slgate"); if(sg) sg.style.display="flex";
     } else {
       var noCount=ans.filter(function(a){return a==="no";}).length;
       el("result-bar").textContent="GATE · STOP";
       el("result-big").textContent="오늘은 아무것도 하지 않는다";
       el("result-text").innerHTML="게이트에 NO가 "+noCount+"개 있습니다. 하나라도 걸리면 진행하지 않습니다. <b>안 사는 것도 선택입니다.</b>";
       el("result-sub").textContent="게이트를 다시 채우거나, 오늘은 여기서 멈추세요.";
+      var sg2=el("slgate"); if(sg2) sg2.style.display="none";
     }
     r.scrollIntoView({behavior:"smooth",block:"nearest"});
   }

@@ -59,6 +59,14 @@ button:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
 /* 모드 스위처 (30초 / 3분) */
 .modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .mode{border-radius:13px;padding:15px 16px;text-decoration:none;border:1.5px solid var(--line);background:var(--card);transition:all .15s;display:block}
+.slgate{display:flex;align-items:center;gap:12px;margin-top:10px;padding:15px 18px;border-radius:13px;
+  text-decoration:none;border:1.5px solid rgba(61,216,176,.4);
+  background:linear-gradient(180deg,rgba(61,216,176,.08),var(--card));transition:all .15s}
+.slgate:hover{border-color:var(--teal)}
+.slgate-l{flex:1}
+.slgate-t{font-size:1.02rem;font-weight:800;color:var(--teal);letter-spacing:-.3px}
+.slgate-s{font-size:.8rem;color:var(--txt2);margin-top:3px;line-height:1.4}
+.slgate-ar{font-size:1.2rem;color:var(--teal);font-weight:700}
 .mode.on{border-color:var(--teal);background:linear-gradient(180deg,rgba(61,216,176,.1),var(--card))}
 .mode .tt{font-size:1.12rem;font-weight:800;color:var(--txt);letter-spacing:-.3px}
 .mode.on .tt{color:var(--teal)}
@@ -159,6 +167,14 @@ footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 46px}
       <span class="tag">큰돈 투자 전</span>
     </a>
   </div>
+
+  <a class="slgate" href="/stoploss/">
+    <div class="slgate-l">
+      <div class="slgate-t">손절의 신</div>
+      <div class="slgate-s">이미 샀다면 — 손절선을 시가·종가로 지킵니다</div>
+    </div>
+    <span class="slgate-ar">→</span>
+  </a>
 
   <div class="hl">
     <h1 id="hl-title">투자하기 전에</h1>
