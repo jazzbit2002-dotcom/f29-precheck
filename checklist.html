@@ -98,6 +98,18 @@ button:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
 .slgate-t{font-size:15px;font-weight:800;color:#E8EDF7;letter-spacing:-.3px}
 .slgate-s{font-size:12.5px;color:#8B9AB5;margin-top:4px;line-height:1.45}
 .slgate-ar{font-size:20px;color:#3DD8B0;font-weight:700}
+.exitgates{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.exitgates .egt-cap{grid-column:1/3;font-size:13px;color:#8B9AB5;margin-bottom:2px;line-height:1.4}
+.egate{display:flex;flex-direction:column;gap:0;padding:14px 15px;border-radius:13px;text-decoration:none;transition:all .15s;min-height:44px}
+.egate.sl{border:1.5px solid rgba(61,216,176,.4);background:linear-gradient(180deg,rgba(61,216,176,.08),#131A28)}
+.egate.sell{border:1.5px solid rgba(245,184,65,.4);background:linear-gradient(180deg,rgba(245,184,65,.08),#131A28)}
+.egate.sl:hover{border-color:#3DD8B0}
+.egate.sell:hover{border-color:#F5B841}
+.egate .egt{font-size:16px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:6px}
+.egate.sl .egt{color:#3DD8B0}
+.egate.sell .egt{color:#F5B841}
+.egate .egs{font-size:12px;color:#8B9AB5;margin-top:4px;line-height:1.4}
+.egate .egar{font-size:17px;font-weight:700;margin-left:auto}
 .result-sub{margin-top:14px; padding-top:13px; border-top:1px dashed #5A6B8444;
   font-size:13px; color:var(--txt2); font-style:italic}
 
@@ -231,14 +243,17 @@ footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 46px}
     </div>
   </div>
 
-  <a class="slgate" id="slgate" href="/stoploss/" style="display:none">
-    <div class="slgate-l">
-      <div class="slgate-k">매수를 결정했다면</div>
-      <div class="slgate-t">손절선을 먼저 정하세요 · 손절의 신</div>
-      <div class="slgate-s">사는 순간이 아니라, 틀렸을 때 정리할 선을 지금 정합니다.</div>
-    </div>
-    <span class="slgate-ar">→</span>
-  </a>
+  <div class="exitgates" id="slgate" style="display:none">
+    <div class="egt-cap">매수를 결정했다면, 다음 단계의 규율도 지금 준비하세요.</div>
+    <a class="egate sl" href="/stoploss/">
+      <div class="egt">손절의 신 <span class="egar">→</span></div>
+      <div class="egs">사는 순간이 아니라, 틀렸을 때 정리할 선을 지금 정합니다.</div>
+    </a>
+    <a class="egate sell" href="/sell/">
+      <div class="egt">매도의 신 <span class="egar">→</span></div>
+      <div class="egs">수익이 났을 때, 한 번에 팔지 않고 나눠서 계좌에 남깁니다.</div>
+    </a>
+  </div>
 
   <p class="disclaimer" id="footer"></p>
 </div>
@@ -345,7 +360,7 @@ footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 46px}
       el("result-big").textContent="PASS";
       el("result-text").innerHTML="이것은 <b>수익 가능성이 높다는 뜻이 아닙니다.</b> 당신이 틀렸을 때를 미리 준비했다는 뜻입니다.";
       el("result-sub").textContent="이제 시장이 결정합니다.";
-      var sg=el("slgate"); if(sg) sg.style.display="flex";
+      var sg=el("slgate"); if(sg) sg.style.display="grid";
     } else {
       var noCount=ans.filter(function(a){return a==="no";}).length;
       el("result-bar").textContent="GATE · STOP";
